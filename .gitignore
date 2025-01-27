@@ -169,3 +169,13 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# ignore pg_data directory
+data/pg_data/
+
+# ignore jupyter notebook data
+data/notebook_data/
+
+# ignore pgadmin data
+data/pg_admin_data/
+

@@ -50,16 +50,18 @@ resource "google_compute_instance" "de-course-zoomcamp" {
   # Startup script to install and start Docker, and clone the repository
   metadata_startup_script = <<-EOT
     #!/bin/bash
+    DEV_USER=de
     apt-get update
     apt-get upgrade -y
     apt-get install -y docker.io git
+    usermod -aG docker $DEV_USER
     DOCKER_CONFIG=/usr/local/lib/docker
     mkdir -p $DOCKER_CONFIG/cli-plugins
     curl -SL https://github.com/docker/compose/releases/download/v2.32.4/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
     chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
     systemctl start docker
     systemctl enable docker
-    git clone https://github.com/Halum/data-engineering-course /home/de/data-engineering-course
+    git clone https://github.com/Halum/data-engineering-course /home/$DEV_USER/data-engineering-course
   EOT
 
   # Configure the network interface

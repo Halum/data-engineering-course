@@ -1,0 +1,67 @@
+name: DE_PROJECT
+services:
+  pgdatabase:
+    image: postgres:13
+    container_name: DE_DB
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=ny_taxi
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - de_network
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: DE_PG_ADMIN
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    ports:
+      - "8080:80"
+    networks:
+      - de_network
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+  jupyter:
+    build: ./jupyter
+    container_name: DE_JUPYTER
+    environment:
+      - JUPYTER_TOKEN=''  # Disable token
+      - JUPYTER_PASSWORD=''  # Disable password
+    ports:
+      - "8888:8888"
+    volumes:
+      - jupyter_data:/home/jovyan/work
+    networks:
+      - de_network
+  # coding:
+  #   build: ./module-1
+  #   container_name: DE_CODING
+  #   volumes:
+  #     - coding_data:/app
+  #   command: ["python", "-m", "http.server", "8000"]
+networks:
+  de_network:
+    name: DE_NETWORK
+volumes:
+  pgdata:
+    driver: local
+    driver_opts:
+      type: bind
+      o: bind
+      device: ./data/pg_data
+  pgadmin_data:
+    driver: local
+    driver_opts:
+      type: bind
+      o: bind
+      device: ./data/pg_admin_data
+  jupyter_data:
+    driver: local
+    driver_opts:
+      type: bind
+      o: bind
+      device: ./data/notebook_data

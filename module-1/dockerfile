@@ -1,8 +1,0 @@
-FROM python:3.12.8-alpine
-
-# Set the working directory
-WORKDIR /app
-
-
-# Run bash as the entrypoint
-ENTRYPOINT ["/bin/sh"]

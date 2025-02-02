@@ -57,7 +57,7 @@ resource "google_compute_instance" "de-course-zoomcamp" {
     apt-get update
     apt-get upgrade -y
 
-    # Create a development user and group
+    # Create a development user
     DEV_USER=de
     REPO_NAME=data-engineering-course
 
@@ -80,7 +80,12 @@ resource "google_compute_instance" "de-course-zoomcamp" {
     # Clone the data engineering course repository
     git clone https://github.com/Halum/data-engineering-course /home/$DEV_USER/$REPO_NAME
     git config --global --add safe.directory /home/$DEV_USER/$REPO_NAME
+    git config --local user.name "Sajjad Hossain"
+    git config --local user.email "my.lost.word@gmail.com"
 
+    # Change ownership and permission of the pg_admin_data directory
+    chown -R $DEV_USER:$DEV_USER /home/$DEV_USER
+    chmod -R 775 /home/$DEV_USER
     
     # Change ownership and permission of the pg_admin_data directory
     chown -R 5050:5050 /home/$DEV_USER/$REPO_NAME/data/pg_admin_data

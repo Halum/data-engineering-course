@@ -51,7 +51,12 @@ resource "google_compute_instance" "de-course-zoomcamp" {
   metadata_startup_script = <<-EOT
     #!/bin/bash
     apt-get update
+    apt-get upgrade -y
     apt-get install -y docker.io git
+    DOCKER_CONFIG=/usr/local/lib/docker
+    mkdir -p $DOCKER_CONFIG/cli-plugins
+    curl -SL https://github.com/docker/compose/releases/download/v2.32.4/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+    chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
     systemctl start docker
     systemctl enable docker
     git clone https://github.com/Halum/data-engineering-course /home/de/data-engineering-course

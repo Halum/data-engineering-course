@@ -170,10 +170,6 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-
-# ignore raw_data directory
-data/raw_data/*.csv
-
 # ignore jupyter notebook data
 data/notebook_data/*.csv
 

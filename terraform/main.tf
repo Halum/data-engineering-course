@@ -15,19 +15,22 @@ provider "google" {
   region      = "us-central1"
 }
 
-# This code is compatible with Terraform 4.25.0 and versions that are backwards compatible to 4.25.0.
-# For information about validating this Terraform code, see https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/google-cloud-platform-build#format-and-validate-the-configuration
+# Reserve a static IP address
+resource "google_compute_address" "static_ip" {
+  name   = "de-course-zoomcamp-static-ip"
+  region = "us-central1"
+}
 
 # Define a Google Compute Instance resource
 resource "google_compute_instance" "de-course-zoomcamp" {
   name         = "de-course-zoomcamp"
-  machine_type = "e2-medium"
+  machine_type = "e2-standard-2"
   zone         = "us-central1-c"
 
   # Configure the boot disk
   boot_disk {
     auto_delete = true
-    device_name = "de-course-zoomcamp"
+    device_name = "de-course-zoomcamp-disk"
 
     initialize_params {
       image = "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20250111"
@@ -57,20 +60,12 @@ resource "google_compute_instance" "de-course-zoomcamp" {
     # Create a development user and group
     DEV_USER=de
     REPO_NAME=data-engineering-course
-    groupadd devgroup
-    usermod -aG devgroup $DEV_USER
-    usermod -aG devgroup docker
-    usermod -aG devgroup pgadmin
-
-    # Repository directory and change ownership and permissions
-    chown -R :devgroup /home/$DEV_USER/$REPO_NAME
-    chmod -R 775 /home/$DEV_USER/$REPO_NAME
 
     # Install Docker and Git
     apt-get install -y docker.io git
     
     # Add the development user to the Docker group
-    # usermod -aG docker $DEV_USER
+    usermod -aG docker $DEV_USER
     
     # Install Docker Compose
     DOCKER_CONFIG=/usr/local/lib/docker
@@ -84,15 +79,18 @@ resource "google_compute_instance" "de-course-zoomcamp" {
     
     # Clone the data engineering course repository
     git clone https://github.com/Halum/data-engineering-course /home/$DEV_USER/$REPO_NAME
+    git config --global --add safe.directory /home/$DEV_USER/$REPO_NAME
+
     
     # Change ownership and permission of the pg_admin_data directory
-    # chown -R 5050:5050 /home/$DEV_USER/data-engineering-course/data/pg_admin_data
-    # chmod -R 775 /home/$DEV_USER/data-engineering-course/data/pg_admin_data
+    chown -R 5050:5050 /home/$DEV_USER/$REPO_NAME/data/pg_admin_data
+    chmod -R 775 /home/$DEV_USER/$REPO_NAME/data/pg_admin_data
   EOT
 
   # Configure the network interface
   network_interface {
     access_config {
+      nat_ip       = google_compute_address.static_ip.address
       network_tier = "PREMIUM"
     }
 

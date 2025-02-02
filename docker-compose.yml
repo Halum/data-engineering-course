@@ -37,12 +37,6 @@ services:
       - jupyter_data:/home/jovyan/work
     networks:
       - de_network
-  # coding:
-  #   build: ./module-1
-  #   container_name: DE_CODING
-  #   volumes:
-  #     - coding_data:/app
-  #   command: ["python", "-m", "http.server", "8000"]
 networks:
   de_network:
     name: DE_NETWORK

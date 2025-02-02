@@ -170,17 +170,12 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-# ignore pg_data directory
-data/pg_data/
 
 # ignore raw_data directory
 data/raw_data/*.csv
 
 # ignore jupyter notebook data
 data/notebook_data/*.csv
-
-# ignore pgadmin data
-data/pg_admin_data/
 
 # Local .terraform directories
 **/.terraform/*

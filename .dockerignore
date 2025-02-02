@@ -1,0 +1,3 @@
+# The data/pg_admin_data/.gitignore file is excluded from the Docker build context so that postgresql can initialize the volume without any error.
+# Did not remove the .gitignore as wante dot keep track the directory in git
+data/pg_admin_data/.gitignore

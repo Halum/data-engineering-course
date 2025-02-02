@@ -28,7 +28,7 @@ docker run -d -p 8000:8000 -v "$(pwd)":/app --name de-terra de-de-terra
 This command will:
 - Run the container in detached mode (`-d`).
 - Map port 8000 on the host to port 8000 in the container (`-p 8000:8000`).
-- Mount the current directory to `/app` in the container (`-v "$(pwd)":/app`).
+- Mount the current directory to `/app` in the container (`-v "$(pwd)":/app`). Which will only help to see files via the python server.
 - Name the container `de-terra` (`--name de-terra`).
 
 ## Use the Container Terminal Interactively

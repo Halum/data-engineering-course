@@ -50,18 +50,44 @@ resource "google_compute_instance" "de-course-zoomcamp" {
   # Startup script to install and start Docker, and clone the repository
   metadata_startup_script = <<-EOT
     #!/bin/bash
-    DEV_USER=de
+    # Update and upgrade the system
     apt-get update
     apt-get upgrade -y
+
+    # Create a development user and group
+    DEV_USER=de
+    REPO_NAME=data-engineering-course
+    groupadd devgroup
+    usermod -aG devgroup $DEV_USER
+    usermod -aG devgroup docker
+    usermod -aG devgroup pgadmin
+
+    # Repository directory and change ownership and permissions
+    chown -R :devgroup /home/$DEV_USER/$REPO_NAME
+    chmod -R 775 /home/$DEV_USER/$REPO_NAME
+
+    # Install Docker and Git
     apt-get install -y docker.io git
-    usermod -aG docker $DEV_USER
+    
+    # Add the development user to the Docker group
+    # usermod -aG docker $DEV_USER
+    
+    # Install Docker Compose
     DOCKER_CONFIG=/usr/local/lib/docker
     mkdir -p $DOCKER_CONFIG/cli-plugins
     curl -SL https://github.com/docker/compose/releases/download/v2.32.4/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
     chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+    
+    # Start the Docker service and enable it to start on boot
     systemctl start docker
     systemctl enable docker
-    git clone https://github.com/Halum/data-engineering-course /home/$DEV_USER/data-engineering-course
+    
+    # Clone the data engineering course repository
+    git clone https://github.com/Halum/data-engineering-course /home/$DEV_USER/$REPO_NAME
+    
+    # Change ownership and permission of the pg_admin_data directory
+    # chown -R 5050:5050 /home/$DEV_USER/data-engineering-course/data/pg_admin_data
+    # chmod -R 775 /home/$DEV_USER/data-engineering-course/data/pg_admin_data
   EOT
 
   # Configure the network interface

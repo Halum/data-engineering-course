@@ -10,10 +10,12 @@ def main(args):
     user = args.user
     password = args.password
     host = args.host
-    post = args.port
+    port = args.port
     db = args.db
-    table_name = args.table_name
+    table = args.table
     data_url = args.data_url
+    
+    print(f'Ingesting data from {data_url}')
     
     
     if data_url.endswith('.csv.gz'):
@@ -21,11 +23,18 @@ def main(args):
     else:
         csv_name = 'output.csv'
         
-    os.system(f'wget -O {data_url} {csv_name}')
+    print(f'Downloading data to {csv_name}')
+        
+    os.system(f'wget {data_url} -O {csv_name}')
+    
+    print(f'Ingesting data into Postgres') 
     
     engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db}')
+    # engine.connect()
     
     df_iter = pd.read_csv(csv_name, chunksize=10000, iterator=True)
+    
+    print(f'Inserting data into {table}')
     
     for df in df_iter:
         try: 
@@ -34,7 +43,7 @@ def main(args):
             df['lpep_pickup_datetime'] = pd.to_datetime(df['lpep_pickup_datetime'])
             df['lpep_dropoff_datetime'] = pd.to_datetime(df['lpep_dropoff_datetime'])
             
-            df.to_sql(name='green_trips', con=engine, if_exists='append')
+            df.to_sql(name=table, con=engine, if_exists='append')
             
             t_end = time()
             
@@ -45,13 +54,14 @@ def main(args):
 
 
 if __name__ == '__main__':
+    print('Starting ingestion')
     parser = argparse.ArgumentParser(description='Ingest CSV into Postgres')
     parser.add_argument('--user', type=str, required=True, help='Postgres username')
     parser.add_argument('--password', type=str, required=True, help='Postgres password')
     parser.add_argument('--host', type=str, required=True, help='Postgres host')
     parser.add_argument('--port', type=str, required=True, help='Postgres port')
     parser.add_argument('--db', type=str, required=True, help='Postgres database')
-    parser.add_argument('--table_name', type=str, required=True, help='Postgres table name')
+    parser.add_argument('--table', type=str, required=True, help='Postgres table name')
     parser.add_argument('--data_url', type=str, required=True, help='URL to CSV file')
         
         

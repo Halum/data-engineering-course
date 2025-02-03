@@ -80,8 +80,8 @@ resource "google_compute_instance" "de-course-zoomcamp" {
     # Clone the data engineering course repository
     git clone https://github.com/Halum/data-engineering-course /home/$DEV_USER/$REPO_NAME
     git config --global --add safe.directory /home/$DEV_USER/$REPO_NAME
-    git config --local user.name "Sajjad Hossain"
-    git config --local user.email "my.lost.word@gmail.com"
+    git config --global user.name "Sajjad Hossain"
+    git config --global user.email "my.lost.word@gmail.com"
 
     # Change ownership and permission of the pg_admin_data directory
     chown -R $DEV_USER:$DEV_USER /home/$DEV_USER
